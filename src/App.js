@@ -1,28 +1,32 @@
 import React ,{useEffect, useState} from 'react';
-import { getPokemonData, getPokemons } from "./api"
+import { getPokemonData, getPokemons, searchPokemon } from "./api"
 import './App.css';
 import Navbar from './components/Navbar';
 import Searchbar from './components/Searchbar';
 import Pokedex from './components/Pokedex';
-import { getPokemonData } from './api';
+
 function App() {
-  const [loading, setLoading] = useState(false)
-  const [pokemons,setPokemons] = useState([])
+
+  const [loading, setLoading] = useState(false);
+  const [pokemons,setPokemons] = useState([]);
+
   const fetchPokemons = async() => {
     try{
       setLoading(true)
       const data  = await getPokemons();
       const promises = data.results.map(async (pokemon)=> {
         return await getPokemonData(pokemon.url)
-      })
-      setPokemons(result);
+      });
+      
+      const results = await Promise.all(promises);
+      setPokemons(results);
       setLoading(false);
     } catch(error) {
-      console.log("fetchPokemons error", error)
+      console.log("fetchPokemons error", error);
     }
   }
+  
   useEffect(() => {
-   console.log("carregou")
    fetchPokemons();
   }, [])
   
